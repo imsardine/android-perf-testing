@@ -102,6 +102,29 @@ def enable_dump_permission(sdk_path, device_id, dest_dir, package_name):
         except OSError:
             print 'ERROR executing permission grant.'
 
+# Enable the READ_LOGS permission on the debuggable test APK (test APK because
+# we declared the permission in the androidTest AndroidManifest.xml file.
+def enable_logcat_permission(sdk_path, device_id, dest_dir, package_name):
+    """Enable the READ_LOGS permission on the specified and installed Android
+    app.
+    """
+
+    print 'Starting dump permission grant'
+    perm_command = [os.path.join(sdk_path, 'platform-tools', 'adb'),
+                    '-s', device_id,
+                    'shell',
+                    'pm', 'grant', package_name,
+                    'android.permission.READ_LOGS']
+    log_file_path = os.path.join(dest_dir, 'logs', 'enable_logcat_perm.log')
+    with open(log_file_path, 'w') as log_file:
+        try:
+            subprocess.call(perm_command,
+                            stdout=log_file,
+                            stderr=subprocess.STDOUT,
+                            shell=False)
+        except OSError:
+            print 'ERROR executing permission grant.'
+
 
 # Enable the Storage permission on the debuggable test APK (test APK because
 # we declared the permission in the androidTest AndroidManifest.xml file.
@@ -337,9 +360,10 @@ def main():
     # device.press("KEYCODE_POWER", "DOWN_AND_UP")
 
     enable_dump_permission(sdk_path, device_id, dest_dir, package_name)
+    enable_logcat_permission(sdk_path, device_id, dest_dir, package_name)
     enable_storage_permission(sdk_path, device_id, dest_dir, package_name)
 
-    open_app(device, package_name)
+    # open_app(device, package_name)
 
     # Clear the dumpsys data for the next run must be done immediately
     # after open_app().
