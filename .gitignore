@@ -15,6 +15,7 @@ local.properties
 /buildSrc/build
 
 # Test run data.
+/perftesting
 /captures
 /testdata
 /logs
